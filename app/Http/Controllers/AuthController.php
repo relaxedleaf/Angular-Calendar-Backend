@@ -70,7 +70,7 @@ class AuthController extends Controller
         $credentials = $request->only(['email', 'password']);
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized', 'response_code' => $this->unauthorizedStatus]);
+            return response()->json(['message' => 'Email and password do not match!', 'response_code' => $this->unauthorizedStatus]);
         }
 
         return $this->respondWithToken($token);
