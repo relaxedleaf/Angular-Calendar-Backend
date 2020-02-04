@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Controller extends BaseController
 {
-    public $successStatus = 100;
-    public $errorStatus = 200;
+    public $successStatus = 200;
+    public $errorStatus = 100;
     public $unauthorizedStatus = 401;
 
     protected function respondWithToken($token)

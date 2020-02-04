@@ -19,13 +19,19 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         //validate incoming request
-        $this->validate($request, [
+        $validate = Validator::make($request->all(),[
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
         ]);
+        if ($validate->fails()) {
+            $res = [
+                'message'       => $validate->messages(),
+                'response_code' => $this->errorStatus,
+            ];
+            return response()->json($res);
+        }
 
         try {
-
             $user = new User;
             $user->first_name = $request->input('first_name');
             $user->middle_name = $request->input('middle_name');
@@ -37,12 +43,12 @@ class AuthController extends Controller
             $user->save();
 
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'CREATED', 'status' => $this->successStatus]);
+            return response()->json(['user' => $user, 'message' => 'New user registered successfully!', 'response_code' => $this->successStatus]);
 
         } catch (\Exception $e) {
             //return error message
             Log::error($e->getMessage());
-            return response()->json(['message' => 'User Registration Failed!', 'status' => $this->errorStatus]);
+            return response()->json(['message' => 'User Registration Failed!', 'response_code' => $this->errorStatus]);
         }
 
     }
@@ -64,7 +70,7 @@ class AuthController extends Controller
         $credentials = $request->only(['email', 'password']);
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized', 'status' => $this->unauthorizedStatus]);
+            return response()->json(['message' => 'Unauthorized', 'response_code' => $this->unauthorizedStatus]);
         }
 
         return $this->respondWithToken($token);
@@ -81,6 +87,6 @@ class AuthController extends Controller
             ];
             return response()->json($res);
         }
-        return response()->json(['status', $this->successStatus]);
+        return response()->json(['response_code', $this->successStatus]);
     }
 }
